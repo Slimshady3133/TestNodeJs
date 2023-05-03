@@ -10,6 +10,8 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+const authRoute = require('./routes/auth.routes');
+
 config(app);
 
 const logger = winston.createLogger({
@@ -24,6 +26,8 @@ const logger = winston.createLogger({
     new winston.transports.File({ filename: 'logs/combined.log' }),
   ],
 });
+
+app.use('/api/auth', authRoute);
 async function start() {
   try {
     await connect();
@@ -37,48 +41,3 @@ async function start() {
 }
 
 start();
-
-// const express = require('express');
-// const bcrypt = require('bcryptjs');
-// const jwt = require('jsonwebtoken');
-
-// const users = [];
-
-// // Регистрация
-// app.post('/register', async (req, res) => {
-//   try {
-//     // Хэширование пароля
-//     const salt = await bcrypt.genSalt(10);
-//     const hashedPassword = await bcrypt.hash(req.body.password, salt);
-
-//     const user = { id: users.length + 1, name: req.body.name, email: req.body.email,
-// password: hashedPassword };
-//     users.push(user);
-
-//     // Создание и отправка JWT токена
-//     const token = jwt.sign({ id: user.id }, 'jwtsecret');
-//     res.header('auth-token', token).send(token);
-//   } catch {
-//     res.status(500).send();
-//   }
-// });
-
-// // Авторизация
-// app.post('/login', async (req, res) => {
-//   const user = users.find(user => user.email === req.body.email);
-//   if (!user) {
-//     return res.status(400).send('Invalid email or password');
-//   }
-
-//   // Проверка пароля
-//   const validPassword = await bcrypt.compare(req.body.password, user.password);
-//   if (!validPassword) {
-//     return res.status(400).send('Invalid email or password');
-//   }
-
-//   // Создание и отправка JWT токена
-//   const token = jwt.sign({ id: user.id }, 'jwtsecret');
-//   res.header('auth-token', token).send(token);
-// });
-
-// app.listen(3000, () => console.log('Server is running...'));
